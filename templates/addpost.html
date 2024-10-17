@@ -1,0 +1,91 @@
+{% extends "all.html" %}
+
+{% block title %}
+    Post
+{% endblock title %}
+
+{% block style %}
+<link rel="stylesheet" href="/static/addpost2.0.css"> 
+{% endblock style %}
+
+{% block body %}
+
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            
+            <div class="card">
+                <div class="card-header">
+                     <!-- User Info Section on Top of the Post -->
+                     <div class="user-post-info mb-4">
+                        <img src="/media/{{UserData.profileImage}}/" alt="User Profile" class="post-user-img">
+                        <span class="post-user-name" >TheRayhan PY</span>
+                     </div>
+                        <div id="chakk"></div>
+                    
+                    <h2>Create a New Post</h2>
+                </div>
+                <div class="card-body">
+
+                    <form action="javascript:void(0)" method="post"  enctype="multipart/form-data" id="formpostadd">
+                        {% csrf_token %}
+                        
+                        <!-- User Post Text -->
+                        <div class="form-group">
+                            <label for="post_text">Post Text</label>
+                            <textarea class="form-control" id="post_text" name="post_text" rows="5" placeholder="What's on your mind?" required></textarea>
+                        </div>
+                        
+                        <!-- Image Upload (Optional) -->
+                        <div class="form-group mt-3">
+                            <label for="post_image">Upload Image (Optional)</label>
+                            <input type="file" class="form-control-file" id="post_image" name="post_image">
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary btn-block">Submit Post</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock body %}
+
+{% block script %}
+<script>
+    
+$("#formpostadd").submit(function(event) {
+    event.preventDefault();
+
+    let formData = new FormData(this);  
+    
+    for (let [x,y] of formData){
+        cf=y
+        break
+    }
+    
+    document.getElementById('chakk').innerHTML='<div class="alert alert-primary" role="alert"> Your post has been successfully published! You can continue posting or visit your profile to view your latest post.  </div>'
+    $("#post_image").val("");
+    $("#post_text").val("");
+    //console.log(cf)
+    $.ajax({
+        method: "POST",
+        url: "/addpost/",
+        data: formData,  
+        contentType: false,  
+        processData: false,  
+        headers: {
+            'CSRFToken': cf
+        },
+        
+    });
+});
+
+
+</script>
+{% endblock script %}

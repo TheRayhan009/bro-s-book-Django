@@ -1,0 +1,94 @@
+{% extends "all.html" %}
+
+{% block title %}
+Detailed Post 
+{% endblock title %}
+<link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
+
+{% block style %}
+<link rel="stylesheet" href="/static/home.css/">
+<link rel="stylesheet" href="/static/Dpost.css/">
+{% endblock style %}
+
+{% block body %}
+<div class="mainhbody">
+    <input type="hidden"  class="sr" value="{{surpesUser}}">
+    <input type="hidden"  class="Pid" value="{{rqpostid}}">
+    
+
+<div class=" bootstrap snippets bootdey">
+    <div class="col-md-8">
+        <div class="col-sm-12">
+            <div class="panel panel-white post panel-shadow">
+                <!--  -->
+                <div class="mainPostCotent">
+                    
+                <br>
+            <div class="card gedf-card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="mr-2">
+                                <img width="45" src="/media/{{rqpost.user_image}}" alt="" style="border-radius: 50px; margin-right: 15px;">
+                            </div>
+                            <div class="ml-2">
+                                <div class="h5 m-0">{{rqpost.user_name}}</div>
+                                <div class="h7 text-muted">{{rqpost.first_name}} {{rqpost.last_name}}</div>
+                            </div>
+                        </div>
+                        <div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <p class="card-text"><small class="text-muted">{{rqpost.post_up_date}}</small></p>
+                        <br>
+                        <p class="card-text">{{rqpost.post_txt}}</p>
+                    </div>
+                    <img src="/media/{{rqpost.post_image}}" class="card-img-bottom" alt="" style="border-radius: 5px;">
+                </div>
+                    <div class="post-heading">
+
+                    <div class="card-footer post-actions">
+                        <a href="javascript:void(0)" class="share"><i class="fa fa-share"></i> Share</a>
+                        <input type="hidden"  class="Pslx" value="{{rqpost.post_slug}}">
+                    </div>
+                </div>
+                </div> 
+
+
+                </div>
+                <!--  -->
+                <div class="post-footer">
+                    <div class="input-group"> 
+
+                        <form class="commentForm" action="javascript:void(0)" method="post">
+                            {% csrf_token %}
+                        <input id="commentTxt" class="form-control" placeholder="Add a comment" type="text" style="margin-right: 4px;">
+                        <span class="input-group-addon">
+                            <button id="commentSubBtn" type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-dark text-body" data-mdb-ripple-color="dark" style="z-index: 1;">
+                                Comment
+                              </button>
+                        </span>
+                        </form>
+                    </div>
+                    <ul id="mainComments" class="comments-list">
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+{% block script %}
+  <script src="/static/Dpost.js/"></script>
+
+{% endblock script %}
+
+{% endblock body %}

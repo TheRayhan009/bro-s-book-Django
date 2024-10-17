@@ -1,0 +1,173 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.4;
+}
+
+/* Global Header Styles */
+header {
+    background-color: #242424;
+    color: #fff;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-left: 220px;
+    max-width: 1120px;
+}
+
+/* Logo styles */
+.logo h1 {
+    font-size: 20px;
+}
+
+/* Navigation styles */
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+}
+
+nav ul li a {
+    color: #f4f4f4;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+nav ul li a:hover {
+    text-decoration: underline;
+    color: #ddd;
+}
+
+/* Left Toolbar Container */
+.left-toolbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: 220px;
+    height: 100%;
+    background-color: #242424;
+    padding: 20px;
+    color: #fff;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+/* User Info Section in the Toolbar */
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.user-info img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.user-info .profile-link {
+    color: #fff;
+    font-size: 16px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.user-info .profile-link:hover {
+    text-decoration: underline;
+}
+
+/* Toolbar Navigation Options */
+.toolbar-options {
+    list-style: none;
+    padding: 0;
+}
+
+.toolbar-options li {
+    margin-bottom: 15px;
+}
+
+.toolbar-options li a {
+    color: #ccc;
+    text-decoration: none;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    transition: background 0.3s ease;
+}
+
+.toolbar-options li a img {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+.toolbar-options li a:hover {
+    background-color: #333;
+    color: #fff;
+    padding-left: 15px;
+}
+
+/* See More Button at the Bottom */
+.toolbar-options li a .more {
+    font-weight: bold;
+    color: #fff;
+}
+
+/* Mobile and Tablet View Adjustments */
+@media (max-width: 768px) {
+    .left-toolbar {
+        width: 100%;
+        max-width: none;
+        position: relative;
+        height: auto;
+        box-shadow: none;
+        padding: 15px;
+    }
+
+    .toolbar-options li a {
+        font-size: 14px;
+    }
+
+    .user-info img {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+a {
+    text-decoration: none; /* Remove underline from the link */
+}
+
+a:hover {
+    text-decoration: none; /* Ensure underline stays removed on hover */
+}
+
+a h1 {
+    font-family: 'Arial', sans-serif;
+    font-size: 36px;
+    color: #818181;
+    font-weight: bold;
+    transition: color 0.3s ease, transform 0.3s ease;
+    text-decoration: none;
+}
+
+a h1:hover {
+    color: #313131; /* Change color on hover */
+    transform: scale(1.05); /* Slight zoom effect */
+    text-decoration: none;
+}
+
