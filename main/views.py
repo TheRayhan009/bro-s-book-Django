@@ -1,6 +1,6 @@
 from django.shortcuts import render ,redirect
 from django.http import HttpResponse ,JsonResponse
-from data.models import SBUser,UserPost,LikeOfUser,CommentsOfUser
+from data.models import SBUser,UserPost,LikeOfUser,CommentsOfUser,UserFollowData
 import random
 from django.core.mail import send_mail ,EmailMultiAlternatives
 from django.utils.html import strip_tags
@@ -283,6 +283,9 @@ def getpostdata(request):
         
         for obj in datax:
             po = obj['pk']
+            posttt=UserPost.objects.get(id=po)
+            postUPusername=posttt.user_name
+           
             chak_like = LikeOfUser.objects.filter(user_name_Of_liked_user=username,liked_post_id = po)
             chak_like_num = LikeOfUser.objects.filter(liked_post_id = po)
             num_of_likes=len(chak_like_num)
@@ -292,6 +295,18 @@ def getpostdata(request):
             else:
                 obj['fields']['likedornot'] = "no"
             obj['fields']['num_of_likes']=num_of_likes
+            try:
+                if username==postUPusername:
+                    obj['fields']['flwOrNot']="False"
+                    obj['fields']['btnc']="True"
+                else:
+                    Uflwornot=UserFollowData.objects.get(following_user=username,followed_user=postUPusername)
+                    obj['fields']['flwOrNot']=Uflwornot.flwOrNot
+                    obj['fields']['btnc']="False"
+            except:
+                obj['fields']['flwOrNot']="False"
+                obj['fields']['btnc']="False"
+           
                 
         newdata=json.dumps(datax)
         
@@ -382,3 +397,62 @@ def addcomments(request):
         return JsonResponse(
             {"msg":"ok!"}
         )
+        
+        
+def userdetailedpost(request,link):
+    log = request.session.get("log")
+    Username = request.session.get("username")
+    if link==Username:
+        return redirect("/profile/")
+    try:
+        flw = UserFollowData.objects.get(following_user=Username, followed_user=link)
+    except UserFollowData.DoesNotExist:
+        flw = False
+    DitalsOfUser=SBUser.objects.get(user_name=Username)
+    requested_profile_user_data=SBUser.objects.get(user_name=link)
+    postCount=len(UserPost.objects.filter(user_name=link))
+    if log:
+        ele={
+            "log":True,
+            "Udata": requested_profile_user_data,
+            "SRUserData":DitalsOfUser,
+            "postlen":postCount,
+            "UserData":DitalsOfUser,
+            "flwData":flw,
+            }
+    else:
+        ele={
+            "Udata": requested_profile_user_data,
+            "postlen":postCount,
+            
+            }
+    return render(request, 'UserProfile.html',ele)
+
+
+def dofollow(request):
+    flwingUser=request.POST.get("following_user")
+    flwedUser=request.POST.get("followed_user")
+    flw_status=request.POST.get("flwstatus")
+    try:
+        x = UserFollowData.objects.get(following_user=flwingUser, followed_user=flwedUser)
+        if flw_status=="no":
+            x.flwOrNot="yes"
+        else:
+            x.flwOrNot="no"
+        x.save()
+        
+    except:
+        data=UserFollowData(
+                following_user=flwingUser,
+                followed_user=flwedUser,
+                flwOrNot="yes",
+        )
+        print("ok1")
+        data.save()
+        
+
+    
+    return JsonResponse({
+        "msg":"ok"
+    })
+    

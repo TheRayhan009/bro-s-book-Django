@@ -39,3 +39,9 @@ class CommentsOfUser(models.Model):
     commented_post_id=models.CharField(max_length=100000,blank=True)
     comment_txt=models.CharField(max_length=1000000,blank=True)
     # profileImage=models.ImageField(upload_to="" , unique=True ,default="",blank=True)
+    
+    
+class UserFollowData(models.Model):
+    following_user=models.CharField(max_length=200 ,blank=True)
+    followed_user=models.CharField(max_length=200 ,blank=True)
+    flwOrNot=models.CharField(max_length=10 ,blank=True)

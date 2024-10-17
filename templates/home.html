@@ -153,6 +153,8 @@ function dataLoad(){
             nextx=next.fields
             let Pid=next.pk
             let likedornot = nextx.likedornot === "yes";
+            let flwchak = nextx.flwOrNot === "yes";
+            let btnf = nextx.btnc === "False";
 
             $("#responseposts").append(`
             <br>
@@ -164,7 +166,20 @@ function dataLoad(){
                                 <img width="45" src="media/${nextx.user_image}" alt="" style="border-radius: 50px; margin-right: 15px;">
                             </div>
                             <div class="ml-2">
-                                <div class="h5 m-0">@${nextx.user_name}</div>
+                                <a href="/userdetailedpost/${nextx.user_name}" style="text-decoration: none; color: black;">
+                                    <div class="h5 m-0 d-inline-flex align-items-center">
+                                        @${nextx.user_name}
+                                        
+                                                ${btnf ? `<button onclick="FlW()" id="FlButton" type="button" 
+                                                class="btn btn-outline-dark btn-sm ms-2" 
+                                                data-mdb-button-init data-mdb-ripple-init 
+                                                data-mdb-ripple-color="dark" 
+                                                style="z-index: 1;">  ${flwchak ? `Followed`:`Follow`}  </button>`:  ``}
+                                            
+                                    </div>
+                                </a>
+                                <input type="hidden" class="FlworNot" value="{% if flwData.flwOrNot %}{{flwData.flwOrNot}}{% else %}no{% endif %}">
+
                                 <div class="h7 text-muted">${nextx.first_name} ${nextx.last_name}</div>
                             </div>
                         </div>

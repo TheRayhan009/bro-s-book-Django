@@ -12,7 +12,8 @@
 
 {% load static %}
 
-<input type="hidden"  class="sr" value="{{surpesUser}}">
+<input type="hidden"  class="sr" value="{{Udata.user_name}}">
+<input type="hidden"  class="sr2" value="{{SRUserData.user_name}}">
 
 <section class="h-100 gradient-custom-2">
   <div class="container py-5 h-100">
@@ -24,8 +25,17 @@
               <img src="/media/{{Udata.profileImage}}"
                 alt="Generic placeholder image" class="img-fluid img-thumbnail mt-4 mb-2"
                 style="width: 150px; z-index: 1">
-              <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-dark text-body" data-mdb-ripple-color="dark" style="z-index: 1;">
-                Edit profile
+                {% if flwData.flwOrNot %}
+                <input type="hidden"  class="FlworNot" value="{{flwData.flwOrNot}}">
+                {% else %}
+                <input type="hidden"  class="FlworNot" value="no">
+                {% endif %}
+              <button onclick="FlW()" id="FlButton" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-dark text-body" data-mdb-ripple-color="dark" style="z-index: 1;">
+                {% if flwData.flwOrNot == "yes" %}
+                Followed
+                {% else %}
+                Follow
+                {% endif %}
               </button>
             </div>
             <div class="ms-3" style="margin-top: 130px;">
@@ -59,7 +69,7 @@
               </div>
             </div>
             <div class="d-flex justify-content-between align-items-center mb-4 text-body">
-              <p class="lead fw-normal mb-0">Recent Post</p> <a href="/addpost"> <button class="add-post-btn">Add New Post</button></a>
+               <p class="lead fw-normal mb-0">Recent Post</p> <!--<a href="/addpost"> <button class="add-post-btn">Add New Post</button></a> -->
               <!-- <p class="mb-0"><a href="#!" class="text-muted">Show all</a></p> -->
             </div>
             <div class="row g-1">
@@ -247,6 +257,62 @@
 
 })
 
+function FlW(){
+    let flwingUser=$(".sr2").val()
+    let flwedUser=$(".sr").val()
+    console.log(flwingUser)
+    console.log(flwedUser)
+
+    let ForNot=$(".FlworNot").val()
+
+    console.log(ForNot)
+    
+    if (ForNot==="no"){
+        $("#FlButton").text("Followed")
+        $.ajax({
+            method:"POST",
+            url:"/dofollow/",
+            data:{
+                "following_user":flwingUser,
+                "followed_user":flwedUser,
+                "flwstatus":ForNot,
+            },
+            headers:{
+                "X-CSRFToken": getCookie("csrftoken"),
+                
+            },
+            
+        }).done(
+            function(){
+                $(".FlworNot").val("yes")
+            }
+        )
+        
+    }else{
+        $("#FlButton").text("Follow")
+        $.ajax({
+            method:"POST",
+            url:"/dofollow/",
+            data:{
+                "following_user":flwingUser,
+                "followed_user":flwedUser,
+                "flwstatus":ForNot,
+            },
+            headers:{
+                "X-CSRFToken": getCookie("csrftoken"),
+
+            },
+        
+        }).done(
+            function(){
+                $(".FlworNot").val("no")
+            }
+        )
+    }
+
+
+
+}
 
 </script>
 {% endblock script %}
