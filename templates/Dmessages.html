@@ -1,0 +1,341 @@
+{% extends "all.html" %}
+
+{% block title %}
+  {{link}} Book
+{% endblock title %}
+{% block style %}
+<style>
+    .s {
+        font-family: 'Arial', sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+    }
+    
+    .chat-container {
+        display: flex;
+        flex-direction: column;
+        width: 50%;
+        height: 80%;
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-left: 400px;
+        min-height: 570px;  
+    }
+    
+    .chat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    
+    .profile-info {
+        display: flex;
+        align-items: center;
+    }
+    
+    .profile-info img {
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+    
+    .profile-info p {
+        margin: 0;
+    }
+    
+    .chat-body {
+      flex-grow: 1;
+      overflow-y: auto; /* Allows scrolling */
+      padding-right: 10px;
+      margin-bottom: 20px;
+      max-height: 500px; /* Set a max height based on your layout */
+      min-width: 500px
+  }
+    
+    .chat-item {
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+    
+    .chat-item.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .chat-item p {
+        max-width: 70%;
+        padding: 10px;
+        border-radius: 10px;
+    }
+    
+    .text-left p {
+        background-color: #f3f3f3;
+        color: black;
+        align-self: flex-start;
+        max-width: 400px;
+        
+    }
+    
+    .text-right p {
+        background-color: #263443;
+        color: white;
+        align-self: flex-end;
+        max-width: 400px;
+    }
+    
+    .chat-item .text-sm {
+      padding: 4px;
+        font-size: 0.8rem;
+        color: #888;
+        margin-top: 5px;
+    }
+    
+    .chat-footer {
+        display: flex;
+        align-items: center;
+    }
+    
+    .chat-footer input {
+        flex-grow: 1;
+        padding: 10px;
+        border-radius: 20px;
+        background-color: #f3f3f3;
+        border: none;
+        margin-right: 10px;
+    }
+    
+    .chat-footer i {
+        font-size: 1.5rem;
+        color: #007bff;
+        cursor: pointer;
+        padding: 7px;
+    }
+    
+
+</style>
+{% endblock style %}
+
+{% block body %}
+
+<input class="sr" type="hidden" name="username" value="{{username}}">
+<input class="Csr" type="hidden" name="username" value="{{chtangUser}}">
+
+<div class="chat-container s">
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="profile-info">
+      <a href="https://www.example.com">
+        <img alt="Profile picture of Sontos Sarma" height="40" src="/media/{{chtangUserData.profileImage}}" width="40"/>
+      </a>
+      <div>
+        <p class="font-bold">{{chtangUserData.fname}} {{chtangUserData.lname}}</p>
+        <p class="text-green-500">Active now</p>
+      </div>
+    </div>
+    <div class="flex space-x-4">
+      <i class="fas fa-phone text-gray-600"></i>
+      <i class="fas fa-video text-gray-600"></i>
+      <i class="fas fa-info-circle text-gray-600"></i>
+    </div>
+  </div>
+
+  <!-- Messages Body -->
+  <div class="chat-body">
+    <!-- <div class="chat-item text-left">
+      <p>Vhai medium e kosto kore follow diye raikho😥😅😅</p>
+      <p class="text-sm">Tues 23:58</p>
+    </div> -->
+    <!-- <div class="chat-item text-right">
+      <p>acca😅</p>
+      <p class="text-sm">13:30</p>
+    </div>
+    <div class="chat-item text-right">
+      <i class="fas fa-thumbs-up text-blue-600 text-3xl"></i>
+      <p class="text-sm">13:30</p>
+    </div>
+    <div class="chat-item text-left">
+        <p>https://www.blackbox.ai/screenshot/7YLAfoQyLysnO7Y2tT7W2?share=true</p>
+      <p class="text-sm">Sent 1h ago</p>
+    </div> -->
+  </div>
+
+  <!-- Message Input -->
+  <div class="chat-footer">
+    <form action="javascript:void(0)" method="post"  id="message_send_box_form">
+    <input placeholder="What is on your mind??" type="text" id="message_send_box"/>
+    <button type="submit"><i class="fas fa-paper-plane " style="margin-right: 20px;"></i></button>
+  </form>
+    <!-- <i class="fas fa-plus-circle"></i> -->
+    <i class="fas fa-thumbs-up"></i>
+    <i class="fas fa-microphone" id="mic-icon"></i>
+    <span class="timer" id="timer"></span>
+    <i class="fas fa-camera"></i>
+    <i class="fas fa-smile"></i>
+  </div>
+</div>
+{% endblock body %}
+
+{% block script %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const chatItems = document.querySelectorAll('.chat-item');
+    let delay = 0;
+    chatItems.forEach(item => {
+      setTimeout(() => {
+        item.classList.add('show');
+      }, delay);
+      delay += 300; // adjust the delay between message slides
+    });
+  });
+
+
+
+
+  window.onload = function(){
+    let serpes_user= $(".sr").val()
+    let chat_user= $(".Csr").val()
+
+    $.ajax({
+        method:"GET",
+        url:"/getmessage/",
+        data:{
+            "user":serpes_user,
+            "chtangUser":chat_user,
+
+        },
+
+    }).done(function(response){
+        console.log("success");
+        
+      let q=JSON.parse(response)
+
+      q.forEach(function(e){
+        chak= (e.fields.message_from === serpes_user && e.fields.message_to === chat_user);
+        data = e.fields
+            $(".chat-body").append(`
+            ${chak ? `<div class="chat-item text-right show">
+          <p>${data.sent_message}</p>
+          <p class="text-sm">${data.sent_date}</p>
+        </div>` 
+        
+        :
+        
+        `<div class="chat-item text-left show">
+        <p>${data.sent_message}</p>
+        <p class="text-sm">${data.sent_date}</p>
+      </div
+      `}`)
+      let chatBody = $(".chat-body");
+        chatBody.scrollTop(chatBody[0].scrollHeight);
+      })
+
+    })
+    
+  }
+
+
+  $("#message_send_box_form").submit(function(){
+    event.preventDefault();
+    console.log("ok!!")
+    let serpes_user= $(".sr").val()
+    let chat_user= $(".Csr").val()
+    let message = $("#message_send_box").val()
+    console.log(message)
+    $.ajax({
+      method:"GET",
+      url:"/sendmessage/",
+      data:{
+        "user":serpes_user,
+        "chtangUser":chat_user,
+        "message":message,
+        },
+        success:function(response){
+          console.log(response);
+          $("#message_send_box").val("")
+        }
+      })
+  })
+
+  let previousMessages = "";
+  let l=[]
+
+  setInterval(function showinstentsmessages(){
+    let x=""
+    let serpes_user= $(".sr").val()
+    let chat_user= $(".Csr").val()
+    $.ajax({
+      method:"GET",
+      url:"/getmessage/",
+      data:{
+        "user":serpes_user,
+        "chtangUser":chat_user,
+        },
+        success:function(response){
+
+          if (previousMessages.length==0){
+            previousMessages=response
+            c=JSON.parse(response)
+            c.forEach(function(item){
+                l.push(item)
+              })
+
+
+
+          }else if (previousMessages.length < response.length){
+            c=JSON.parse(response)
+            pre=JSON.parse(previousMessages)
+            let pre_L_len=l.length
+            c.forEach(function(item){
+              if ( !l.some(pre => pre.fields.sno_of_message === item.fields.sno_of_message) ){
+                l.push(item)
+                }
+              })
+              previousMessages=response
+              console.log(l)
+
+              if (pre_L_len != response.length){
+
+                let res=JSON.parse(response)
+                let new_M_count= response.length - pre_L_len
+                for (let i = res.length - 1; i > pre_L_len-1; i-- ){
+                  console.log(i)
+                  let chakx= (l[i].fields.message_from === serpes_user && l[i].fields.message_to === chat_user);
+                  data = l[i].fields
+                  $(".chat-body").append(`
+                ${chakx ? `<div class="chat-item text-right show">
+          <p>${data.sent_message}</p>
+          <p class="text-sm">${data.sent_date}</p>
+        </div>` 
+        
+        :
+        
+        `<div class="chat-item text-left show">
+        <p>${data.sent_message}</p>
+        <p class="text-sm">${data.sent_date}</p>
+      </div
+      `}
+                  `)
+                }
+              }
+        let chatBody = $(".chat-body");
+        chatBody.scrollTop(chatBody[0].scrollHeight);
+          }
+        }
+      })
+
+ },500)
+
+
+</script>
+{% endblock script %}

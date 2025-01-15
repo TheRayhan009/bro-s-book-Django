@@ -1,0 +1,253 @@
+{% extends "all.html" %}
+
+{% block title %}
+    Friends
+{% endblock title %}
+
+{% block style %}
+    <style>
+      .bg-white { background-color: white; }
+      .text-black { color: black; }
+      .text-gray-800 { color: #2d3748; }
+      .bg-gray-200 { background-color: #edf2f7; }
+      .bg-gray-300 { background-color: #e2e8f0; }
+      .bg-blue-500 { background-color: #4299e1; }
+      .ml-400 { margin-left: 250px; }
+      .grid-container {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); /* Ensures side-by-side display */
+          gap: 20px;
+          padding: 20px;
+      }
+      .follower-card {
+        margin-left: -100px;
+        background-color: #2d3748; /* Gray background */
+        padding: 10px;
+        border-radius: 10px;
+        text-align: center;
+        color: white; /* White text for better contrast */
+        width: 180px; /* Set a specific width for the cards */
+        margin: 0 auto; /* Center align the card within the grid */
+
+    }
+    
+    .follower-card img {
+        border-radius: 8px;
+        width: 100%; /* Make the image fill the card */
+        height: auto;
+        max-height: 150px; /* Set a maximum height for the image */
+        object-fit: cover; /* Ensure the image maintains its aspect ratio */
+    }
+    
+    .follower-card p {
+        margin: 5px 0;
+        font-size: 0.9rem; /* Slightly smaller font size */
+    }
+    
+    .follower-card button {
+        font-size: 0.8rem; /* Make the buttons smaller */
+        padding: 4px 8px; /* Adjust button padding */
+        margin: 4px; /* Add spacing between buttons */
+    }
+    </style>
+{% endblock style %}
+
+{% block body %}
+<input type="hidden" id="sr" value="{{srUser}}">
+ <body class="bg-white text-black">
+  
+  <div class="w-3/4 p-4 ml-400">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-gray-800">Followers</h2>
+    </div>
+    <div class="grid-container mainUFollwers">
+        <!-- Follower cards will be dynamically inserted here -->
+    </div>
+</div>
+
+
+<div class="w-3/4 p-4 ml-400">
+  <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold text-gray-800">Following</h2>
+  </div>
+  <div class="grid-container mainUFollowing">
+      <!-- Follower cards will be dynamically inserted here -->
+  </div>
+</div>
+
+
+
+<div class="w-3/4 p-4 ml-400">
+  <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold text-gray-800">Friends</h2>
+  </div>
+  <div class="grid-container mainUFriends">
+      <!-- Follower cards will be dynamically inserted here -->
+  </div>
+</div>
+
+
+</body>
+
+{% endblock body %}
+
+{% block script %}
+    <script>
+
+      function showFollowersData(data) {
+        data = JSON.parse(data);
+        data.forEach(function(e) {
+            let following_user = e.fields.following_user;
+            console.log(e.fields.following_user);
+    
+            $.ajax({
+                method: "GET",
+                url: "/getuserfollowerinfo/",
+                data: {
+                    "Quser": following_user,
+                },
+            }).done(function(response) {
+                let x = JSON.parse(response);
+                x.forEach(function(e) {
+                  let fd = e.fields;
+                  $(".mainUFollwers").prepend( `
+                          
+                          <div class="follower-card">
+                          <img alt="Profile image" src="/media/${fd.profileImage}" />
+                          <p class="font-bold text-sm">${fd.fname} ${fd.lname}</p> <!-- Reduced text size -->
+                          <p class="text-gray-300 text-xs">3 mutual friends</p> <!-- Reduced text size -->
+                          <button class="bg-blue-500 text-white py-1 px-3 text-xs">Confirm</button> <!-- Smaller button -->
+                          <button class="bg-gray-300 text-black py-1 px-3 text-xs">Delete</button> <!-- Smaller button -->
+                      </div>
+                      
+
+                      `);
+              });
+              
+            });
+        });
+    }
+    
+
+    function showFollowData(data) {
+      data = JSON.parse(data);
+      data.forEach(function(e) {
+          let followed_user = e.fields.followed_user;
+          console.log(e.fields.following_user);
+  
+          $.ajax({
+              method: "GET",
+              url: "/getuserfollowinfo/",
+              data: {
+                  "Quser": followed_user,
+              },
+          }).done(function(response) {
+              let x = JSON.parse(response);
+              console.log(x)
+              x.forEach(function(e) {
+                let fd = e.fields;
+                $(".mainUFollowing").prepend( `
+                        
+                        <div class="follower-card">
+                        <img alt="Profile image" src="/media/${fd.profileImage}" />
+                        <p class="font-bold text-sm">${fd.fname} ${fd.lname}</p> <!-- Reduced text size -->
+                        <p class="text-gray-300 text-xs">3 mutual friends</p> <!-- Reduced text size -->
+                        <button class="bg-blue-500 text-white py-1 px-3 text-xs">Confirm</button> <!-- Smaller button -->
+                        <button class="bg-gray-300 text-black py-1 px-3 text-xs">Delete</button> <!-- Smaller button -->
+                    </div>
+                    
+
+                    `);
+            });
+            
+          });
+      });
+  }
+
+
+  function showFriendsData(data) {
+    data = JSON.parse(data);
+    data.forEach(function(e) {
+        let followed_user = e.fields.followed_user;
+
+        $.ajax({
+            method: "GET",
+            url: "/getuserfriendsinfo/",
+            data: {
+                "Quser": followed_user,
+            },
+        }).done(function(response) {
+            let x = JSON.parse(response);
+            console.log(x)
+            x.forEach(function(e) {
+              let fd = e.fields;
+              $(".mainUFriends").prepend( `
+                      
+                      <div class="follower-card">
+                      <img alt="Profile image" src="/media/${fd.profileImage}" />
+                      <p class="font-bold text-sm">${fd.fname} ${fd.lname}</p> <!-- Reduced text size -->
+                      <p class="text-gray-300 text-xs">3 mutual friends</p> <!-- Reduced text size -->
+                      <button class="bg-blue-500 text-white py-1 px-3 text-xs">Confirm</button> <!-- Smaller button -->
+                      <button class="bg-gray-300 text-black py-1 px-3 text-xs">Delete</button> <!-- Smaller button -->
+                  </div>
+                  
+
+                  `);
+          });
+          
+        });
+    });
+}
+
+
+
+
+      window.onload=function(){
+        let sruser=$("#sr").val()
+        $.ajax({
+          method:"GET",
+          url:"/getuserfollowers/",
+          data:{
+            "Quser":sruser,
+            
+          },
+        }).done(
+          function(response){
+            console.log(response)
+            showFollowersData(response)
+          }
+        )
+
+        $.ajax({
+          method:"GET",
+          url:"/getuserfollow/",
+          data:{
+            "Quser":sruser,
+            
+          },
+        }).done(
+          function(response){
+            console.log(response)
+            showFollowData(response)
+          }
+        )
+
+        $.ajax({
+          method:"GET",
+          url:"/getuserfriends/",
+          data:{
+            "Quser":sruser,
+            
+          },
+        }).done(
+          function(response){
+            console.log(response)
+            showFriendsData(response)
+          }
+        )
+
+      }
+
+
+    </script>
+{% endblock script %}

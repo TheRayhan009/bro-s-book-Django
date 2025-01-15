@@ -1,12 +1,13 @@
 from django.shortcuts import render ,redirect
 from django.http import HttpResponse ,JsonResponse
-from data.models import SBUser,UserPost,LikeOfUser,CommentsOfUser,UserFollowData
+from data.models import SBUser,UserPost,LikeOfUser,CommentsOfUser,UserFollowData,UserMessageData,VoiceMessage
 import random
 from django.core.mail import send_mail ,EmailMultiAlternatives
 from django.utils.html import strip_tags
 from django.core.files.storage import FileSystemStorage
 import json
 from django.core import serializers
+from itertools import chain
 
 def home(request):
     log = request.session.get("log")
@@ -29,9 +30,8 @@ def home(request):
         username=request.POST.get('username')
         password=request.POST.get('password')
 
-        User_data=SBUser.objects.get(user_name=username,password=password)
-        
-        if User_data:
+        if SBUser.objects.filter(user_name=username,password=password).exists():
+            User_data=SBUser.objects.get(user_name=username,password=password)
             request.session['log'] = True
             request.session['first_name'] = User_data.fname
             request.session['last_name'] = User_data.lname
@@ -40,7 +40,11 @@ def home(request):
             request.session['email'] = User_data.email
             request.session['password'] = User_data.password
             return redirect("/")
-        
+        else:
+            ele={
+                "error":True,
+            }
+            return render(request, 'home.html',ele)
         
         
     return render(request, 'home.html')
@@ -375,12 +379,21 @@ def getcomments(request):
         serpes_user=request.POST.get("sr")
         print(postid)
         commented_post_data=CommentsOfUser.objects.filter(commented_post_id=postid)
+        serpes_user_data=SBUser.objects.get(User_name=serpes_user)
+        final_data = serializers.serialize('json',commented_post_data,serpes_user_data)
         
+        user_info = {
+            # 'username': serpes_user_data.user_name,
+            'proImage': serpes_user_data.profileImage,
+        }
+
+        response_data = {
+            'comments': final_data,
+            'user_info': user_info,
+        }
+        print(response_data)
         
-        final_data = serializers.serialize('json',commented_post_data)
-        print(final_data)
-        
-        return JsonResponse(final_data,safe=False)
+        return JsonResponse(response_data,safe=False)
     
 def addcomments(request):
     if request.method == "POST":
@@ -433,26 +446,195 @@ def dofollow(request):
     flwingUser=request.POST.get("following_user")
     flwedUser=request.POST.get("followed_user")
     flw_status=request.POST.get("flwstatus")
+    print(flw_status)
     try:
         x = UserFollowData.objects.get(following_user=flwingUser, followed_user=flwedUser)
+        print("UUUUUUUUU")
         if flw_status=="no":
-            x.flwOrNot="yes"
+            x.flwOrNot = "yes" 
         else:
-            x.flwOrNot="no"
+            x.flwOrNot = "no"
         x.save()
-        
     except:
-        data=UserFollowData(
-                following_user=flwingUser,
-                followed_user=flwedUser,
-                flwOrNot="yes",
+        UserFollowData.objects.create(
+            following_user=flwingUser,
+            followed_user=flwedUser,
+            flwOrNot="yes", 
         )
-        print("ok1")
-        data.save()
-        
-
     
     return JsonResponse({
         "msg":"ok"
     })
+
+
+def friends(request):
+    log = request.session.get("log")
+    Username = request.session.get("username")
+    #  profile_image = request.session.get('profile_image')
+    # Username = request.session.get("username")
+    DitalsOfUser=SBUser.objects.get(user_name=Username)
+    # SB_posts_for_user = UserPost.objects.all().order_by('?')[:3]
+    ele={
+        "log":log,
+        "srUser":Username,
+        "UserData": DitalsOfUser,
+        "PostData":DitalsOfUser,
+        
+    }
+    return render(request,"friends.html",ele)
+
+
+def getuserfollowers(request):
+    if request.method == "GET":
+        srusername= request.GET.get("Quser")
+        data=UserFollowData.objects.filter(followed_user=srusername)
+        l=[]
+        for i in data:
+            if i.flwOrNot=="yes":
+                l.append(i)
+        sdata=serializers.serialize("json",l)
+        
+        return JsonResponse(sdata,safe=False)
     
+def getuserfollowerinfo(request):
+    if request.method == "GET":
+        srusername= request.GET.get("Quser")
+        data=SBUser.objects.filter(user_name=srusername)
+        # print(data)
+        sdata=serializers.serialize("json",data)
+        
+        return JsonResponse(sdata,safe=False)
+def getuserfollow(request):
+    if request.method == "GET":
+        srusername= request.GET.get("Quser")
+        
+        data=UserFollowData.objects.filter(following_user=srusername)
+        
+        l=[]
+        for i in data:
+            if i.flwOrNot=="yes":
+                l.append(i)
+                
+        sdata=serializers.serialize("json",l)
+        
+        return JsonResponse(sdata,safe=False)
+    
+def getuserfollowinfo(request):
+    if request.method == "GET":
+        srusername= request.GET.get("Quser")
+        data=SBUser.objects.filter(user_name=srusername)
+        # print(data)
+        sdata=serializers.serialize("json",data)
+        
+        return JsonResponse(sdata,safe=False)
+    
+    
+def getuserfriends(request):
+    if request.method == "GET":
+        srusername= request.GET.get("Quser")
+        
+        data=UserFollowData.objects.filter(following_user=srusername)
+        l=[]
+        for i in data:
+            if UserFollowData.objects.filter(following_user=i.followed_user , followed_user=i.following_user).exists():
+                if UserFollowData.objects.get(following_user=i.followed_user , followed_user=i.following_user).flwOrNot=="yes" and UserFollowData.objects.get(following_user=i.following_user , followed_user=i.followed_user).flwOrNot=="yes":
+                    l.append(i)
+            
+        print(l)
+        sdata=serializers.serialize("json",l)
+        # print(sdata)
+        
+        
+        return JsonResponse(sdata,safe=False)
+    
+def getuserfriendsinfo(request):    
+    if request.method == "GET":
+        Quser= request.GET.get("Quser")
+        data=SBUser.objects.filter(user_name=Quser)
+        # print(data)
+        sdata=serializers.serialize("json",data)
+        
+        return JsonResponse(sdata,safe=False)
+    message
+def inbox(request):    
+    log = request.session.get("log")
+    Username = request.session.get("username")
+    if log:
+        ele={
+            "log":log,
+            "username":Username
+        }
+        return render(request,"messageing.html",ele)
+    return HttpResponse("404")
+
+
+def message(request,link):  
+    log = request.session.get("log")
+    Username = request.session.get("username")
+    cr_data=SBUser.objects.get(user_name=link)
+    if log:
+        ele={
+            "log":log,
+            "username":Username,
+            "chtangUser":link,
+            "chtangUserData":cr_data,
+        }
+        return render(request,"Dmessages.html",ele)
+    return HttpResponse("404")
+
+def getmessage(request):    
+    sr_user=request.GET.get("user")
+    chat_user=request.GET.get("chtangUser")
+    
+    user_M=UserMessageData.objects.filter(message_from=sr_user , message_to=chat_user)
+    chat_user_M=UserMessageData.objects.filter(message_from=chat_user ,message_to=sr_user)
+    user_V_M=VoiceMessage.objects.filter(V_message_from=sr_user , V_message_to=chat_user)
+    chat_user_V_M=VoiceMessage.objects.filter(V_message_from=chat_user ,V_message_to=sr_user)
+    
+    main_data = list(chain(user_M, chat_user_M, user_V_M, chat_user_V_M))
+    
+    main_data = sorted(main_data, key=lambda x: x.sno_of_message)
+    
+    # print(main_data.order_by("sno_of_message"))
+    
+    final_data=serializers.serialize("json",main_data)
+    # print(final_data)
+    
+    return JsonResponse(final_data,safe=False)
+    
+    
+def sendmessage(request):
+    sr_user=request.GET.get("user")
+    chat_user=request.GET.get("chtangUser")
+    message=request.GET.get("message")
+    print(message)
+    
+    data=UserMessageData.objects.create(
+        message_from=sr_user,
+        message_to=chat_user,
+        sent_message = message,
+        sno_of_message=UserMessageData.objects.filter(message_from=sr_user,message_to=chat_user).count() + UserMessageData.objects.filter(message_from=chat_user,message_to=sr_user).count() + VoiceMessage.objects.filter(V_message_from=chat_user,V_message_to=sr_user).count() + VoiceMessage.objects.filter(V_message_from=sr_user,V_message_to=chat_user).count()
+    )
+    data.save()
+    return JsonResponse({
+        "msg":" ok!!"
+    })
+    
+    
+def uploadVmessage(request):
+    if request.method == 'POST':
+        audio_file = request.FILES.get('audio')
+        sr_user = request.POST.get('sr_user')
+        chat_user = request.POST.get('chat_user')
+        
+        data=VoiceMessage.objects.create(
+            V_message_from=sr_user,
+            V_message_to=chat_user,
+            audio_file = audio_file,
+            sno_of_message=UserMessageData.objects.filter(message_from=sr_user,message_to=chat_user).count() + UserMessageData.objects.filter(message_from=chat_user,message_to=sr_user).count() + VoiceMessage.objects.filter(V_message_from=chat_user,V_message_to=sr_user).count() + VoiceMessage.objects.filter(V_message_from=sr_user,V_message_to=chat_user).count()
+        )
+        data.save()
+        
+        return JsonResponse({
+        "msg":" ok!!"
+        })

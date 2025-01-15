@@ -45,3 +45,32 @@ class UserFollowData(models.Model):
     following_user=models.CharField(max_length=200 ,blank=True)
     followed_user=models.CharField(max_length=200 ,blank=True)
     flwOrNot=models.CharField(max_length=10 ,blank=True)
+    
+    def __str__(self):
+        if  self.flwOrNot =="yes":
+            return f'{self.following_user} is following {self.followed_user}'
+        else:
+            return f'{self.following_user} is not following {self.followed_user}'
+    
+class UserMessageData(models.Model):
+    message_from=models.CharField(max_length=200 ,blank=True)
+    message_to=models.CharField(max_length=200 ,blank=True)
+    sent_message = models.TextField()
+    sent_date=models.DateField(auto_now=True)
+    sno_of_message=models.CharField(max_length=2000 ,blank=True)
+    
+    def __str__(self):
+        return f"Message from {self.message_from} to {self.message_to}"
+    
+    
+from django.db import models
+
+class VoiceMessage(models.Model):
+    V_message_from=models.CharField(max_length=200 ,blank=True)
+    V_message_to=models.CharField(max_length=200 ,blank=True)
+    audio_file = models.FileField(upload_to='',unique=True ,default="",blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    sno_of_message=sno_of_message=models.CharField(max_length=2000 ,blank=True)
+
+    def __str__(self):
+        return f"Message from {self.V_message_from} to {self.V_message_to}"

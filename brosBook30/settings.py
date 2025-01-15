@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "channels",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,6 +41,8 @@ INSTALLED_APPS = [
     "data",
     "main",
 ]
+
+ASGI_APPLICATION = "brosBook30.asgi.application"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -54,6 +57,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'brosBook30.urls'
+
 
 TEMPLATES = [
     {
@@ -140,4 +144,4 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_HOST_USER = 'therayhan009@gmail.com'
-EMAIL_HOST_PASSWORD = 'pv****gev####ii'
+EMAIL_HOST_PASSWORD = 'pvgevrodazjhepii'
